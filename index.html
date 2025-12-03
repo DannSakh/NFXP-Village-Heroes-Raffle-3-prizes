@@ -373,41 +373,40 @@
             gap: 12px;
         }
 
-        /* УВЕЛИЧЕННЫЕ КАРТОЧКИ ПОБЕДИТЕЛЕЙ (вариант B) */
         .winner-card {
             background: rgba(255, 255, 255, 0.95);
             color: #2d3748;
-            padding: 14px 26px; /* было 10px 18px */
+            padding: 14px 26px;
             border-radius: 10px;
             box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
             animation: slideIn 0.5s ease-out;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 16px; /* было 12px */
+            gap: 16px;
         }
 
         .winner-card .winner-number {
             color: #667eea;
             font-weight: bold;
-            font-size: 1.4em; /* было 1em */
-            min-width: 110px; /* было 85px */
+            font-size: 1.4em;
+            min-width: 110px;
         }
 
         .winner-card .participant-name {
             flex: 1;
             color: #2d3748;
             font-weight: bold;
-            font-size: 1.3em; /* было 1em */
+            font-size: 1.3em;
         }
 
         .winner-card .prize-name {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 8px 16px; /* было 5px 12px */
+            padding: 8px 16px;
             border-radius: 6px;
             font-weight: bold;
-            font-size: 1.1em; /* было 0.9em */
+            font-size: 1.1em;
             white-space: nowrap;
         }
 
@@ -543,7 +542,8 @@
 
     <script>
         const WINNERS_PER_ROUND = 3;
-        const PRIZES = ['Prize 1', 'Prize 2', 'Prize 3'];
+        // ★ CHANGED: новые названия призов
+        const PRIZES = ['500 QAR', '250 QAR', '250 QAR'];
 
         let participants = [];
         let usedParticipants = [];
@@ -580,9 +580,9 @@
 
             roundInfo.style.display = 'block';
             let html = `<h3>Raffle Prizes</h3>`;
-            html += `<p>• Prize 1</p>`;
-            html += `<p>• Prize 2</p>`;
-            html += `<p>• Prize 3</p>`;
+            html += `<p>• 500 QAR</p>`;
+            html += `<p>• 250 QAR</p>`;
+            html += `<p>• 250 QAR</p>`;
             html += `<p class="total-left">Total winners in this raffle: ${WINNERS_PER_ROUND}</p>`;
             roundInfo.innerHTML = html;
         }
@@ -716,6 +716,16 @@
             });
         }
 
+        // ★ NEW: честный Fisher–Yates shuffle
+        function shuffleFisherYates(array) {
+            let m = array.length;
+            while (m) {
+                const i = Math.floor(Math.random() * m--);
+                [array[m], array[i]] = [array[i], array[m]];
+            }
+            return array;
+        }
+
         function spinWheel() {
             if (isSpinning || participants.length === 0) return;
 
@@ -748,12 +758,13 @@
             wheel.style.transform = `rotate(${finalRotation}deg)`;
 
             setTimeout(() => {
-                const winners = [];
-                const shuffledAvailable = [...availableParticipants].sort(() => Math.random() - 0.5);
+                // ★ CHANGED: вместо sort(...Math.random...) используем Fisher–Yates
+                const shuffledAvailable = shuffleFisherYates([...availableParticipants]);
                 
+                const winners = [];
                 for (let i = 0; i < WINNERS_PER_ROUND; i++) {
                     const participant = shuffledAvailable[i];
-                    const prize = PRIZES[i]; // Prize 1, Prize 2, Prize 3
+                    const prize = PRIZES[i];
 
                     winners.push({
                         participant: participant,
